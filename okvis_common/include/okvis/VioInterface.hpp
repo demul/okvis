@@ -85,6 +85,8 @@ class VioInterface {
   typedef std::function<
       void(const okvis::Time &, const okvis::MapPointVector &,
            const okvis::MapPointVector &)> LandmarksCallback;
+  typedef std::function<
+      void(const okvis::Time &, std::shared_ptr<okvis::MultiFrame>)> KeyframesCallback;
 
   VioInterface();
   virtual ~VioInterface();
@@ -281,13 +283,21 @@ class VioInterface {
   virtual void setFullStateCallbackWithExtrinsics(
       const FullStateCallbackWithExtrinsics & fullStateCallbackWithExtrinsics);
 
-  /// \brief Set the landmarksCallback to be called every time a new state is estimated.
-  ///        When an implementing class has an estimate, they can call:
+  /// \brief Set the landmarksCallback to be called every time a new state is estimated and landmarks vector is not empty.
+  ///        When an implementing class has an estimate and landmarks vector is not empty, they can call:
   ///        landmarksCallback_( stamp, landmarksVector );
   ///        where stamp is the timestamp
   ///        landmarksVector contains all 3D-landmarks with id.
   virtual void setLandmarksCallback(
       const LandmarksCallback & landmarksCallback);
+
+  /// \brief Set the keyframesCallback to be called every time a new state is estimated and keyframes are detected.
+  ///        When an implementing class has an estimate and keyframes are detected, they can call:
+  ///        keyframesCallback_( stamp, currentKeyframes );
+  ///        where stamp is the timestamp
+  ///        currentKeyframes contains current keyframes with each keyframe's keypoints information including descriptor.
+  virtual void setKeyframesCallback(
+      const KeyframesCallback & keyframesCallback);
 
   /**
    * \brief Set the blocking variable that indicates whether the addMeasurement() functions
@@ -312,6 +322,7 @@ class VioInterface {
   FullStateCallback fullStateCallback_; ///< Full state callback function.
   FullStateCallbackWithExtrinsics fullStateCallbackWithExtrinsics_; ///< Full state and extrinsics callback function.
   LandmarksCallback landmarksCallback_; ///< Landmarks callback function.
+  KeyframesCallback keyframesCallback_; ///< Keyframes callback function.
   std::shared_ptr<std::fstream> csvImuFile_;  ///< IMU CSV file.
   std::shared_ptr<std::fstream> csvPosFile_;  ///< Position CSV File.
   std::shared_ptr<std::fstream> csvMagFile_;  ///< Magnetometer CSV File

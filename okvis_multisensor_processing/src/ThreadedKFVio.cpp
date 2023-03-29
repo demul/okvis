@@ -882,9 +882,8 @@ void ThreadedKFVio::publisherLoop() {
     if (landmarksCallback_ && !result.landmarksVector.empty())
       landmarksCallback_(result.stamp, result.landmarksVector,
                          result.transferredLandmarks);  //TODO(gohlp): why two maps?
-    if (/*keyframesCallback_ && */result.isKeyframe){
-      // keyframesCallback_(result.stamp, result.currentKeyframes);
-    }
+    if (keyframesCallback_ && result.isKeyframe)
+      keyframesCallback_(result.stamp, result.currentKeyframes);
   }
 }
 
