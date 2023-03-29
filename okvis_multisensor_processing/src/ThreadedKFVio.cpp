@@ -793,6 +793,14 @@ void ThreadedKFVio::optimizationLoop() {
         repropagationNeeded_ = true;
       }
 
+      // saving if current frames are keyframe in OptimizationResults struct
+      result.isKeyframe = estimator_.isKeyframe(frame_pairs->id());
+      // saving current frames in OptimizationResults struct if current frames are keyframe
+      if (result.isKeyframe)
+      {
+        result.currentKeyframes = frame_pairs;
+      }
+
       if (parameters_.visualization.displayImages) {
         // fill in information that requires access to estimator.
         visualizationDataPtr = VioVisualizer::VisualizationData::Ptr(
@@ -874,6 +882,9 @@ void ThreadedKFVio::publisherLoop() {
     if (landmarksCallback_ && !result.landmarksVector.empty())
       landmarksCallback_(result.stamp, result.landmarksVector,
                          result.transferredLandmarks);  //TODO(gohlp): why two maps?
+    if (/*keyframesCallback_ && */result.isKeyframe){
+      // keyframesCallback_(result.stamp, result.currentKeyframes);
+    }
   }
 }
 

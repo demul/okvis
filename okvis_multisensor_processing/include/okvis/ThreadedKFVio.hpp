@@ -302,7 +302,9 @@ class ThreadedKFVio : public VioInterface {
         Eigen::aligned_allocator<okvis::kinematics::Transformation> > vector_of_T_SCi;
     okvis::MapPointVector landmarksVector;      ///< Vector containing the current landmarks.
     okvis::MapPointVector transferredLandmarks; ///< Vector of the landmarks that have been marginalized out.
-    bool onlyPublishLandmarks;                  ///< Boolean to signalise the publisherLoop() that only the landmarks should be published
+    bool onlyPublishLandmarks;                  ///< Boolean to signalise the publisherLoop() that only the landmarks should be published.
+    std::shared_ptr<okvis::MultiFrame> currentKeyframes; ///< Current keyframes to publish informations of keypoints. This is updated and published only if current frames are keyframe.
+    bool isKeyframe;                            ///< Boolean to signalise if current frames are keyframe.
   };
 
   /// @name State variables
