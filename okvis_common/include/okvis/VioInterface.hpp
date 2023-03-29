@@ -54,6 +54,7 @@
 #pragma GCC diagnostic pop
 #include <okvis/assert_macros.hpp>
 #include <okvis/Time.hpp>
+#include <okvis/MultiFrame.hpp>
 #include <okvis/FrameTypedefs.hpp>
 #include <okvis/kinematics/Transformation.hpp>
 

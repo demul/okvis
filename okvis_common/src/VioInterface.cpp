@@ -154,7 +154,7 @@ bool VioInterface::writeTracksCsvDescription(size_t cameraId) {
     return false;
   *csvTracksFiles_[cameraId] << "timestamp" << ", " << "landmark_id" << ", "
       << "z_tilde_x" << ", " << "z_tilde_y" << ", " << "z_tilde_stdev" << ", "
-      << "descriptor" << std::endl;
+      << "char48_encoded_descriptor" << std::endl;
   return false;
 }
 

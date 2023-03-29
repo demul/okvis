@@ -235,6 +235,15 @@ class ThreadedKFVio : public VioInterface {
   /// \brief Trigger display (needed because OSX won't allow threaded display).
   void display();
 
+  /**
+   * \brief Write keypoints information including descriptors to file.
+   * \remark This can be registered with the VioInterface.
+   * \param t Timestamp.
+   * \param currentKeyframes Current Keyframes.
+   */
+  void csvSaveKeypointsAsCallback(const okvis::Time & t,
+                                  std::shared_ptr<okvis::MultiFrame> currentKeyframes);
+
  private:
   /// \brief Start all threads.
   virtual void startThreads();

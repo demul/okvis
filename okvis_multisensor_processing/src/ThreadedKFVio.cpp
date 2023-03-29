@@ -38,6 +38,7 @@
  * @author Andreas Forster
  */
 
+#include <fstream>
 #include <map>
 
 #include <glog/logging.h>
@@ -45,6 +46,8 @@
 #include <okvis/ThreadedKFVio.hpp>
 #include <okvis/assert_macros.hpp>
 #include <okvis/ceres/ImuError.hpp>
+
+#define ENCODING_LENGTH_OF_DESCRIPTOR 48
 
 /// \brief okvis Main namespace of this package.
 namespace okvis {
@@ -884,6 +887,45 @@ void ThreadedKFVio::publisherLoop() {
                          result.transferredLandmarks);  //TODO(gohlp): why two maps?
     if (keyframesCallback_ && result.isKeyframe)
       keyframesCallback_(result.stamp, result.currentKeyframes);
+  }
+}
+
+
+// Write keypoints information including descriptors to CSV file.
+void ThreadedKFVio::csvSaveKeypointsAsCallback(
+    const okvis::Time & /*t*/,
+    std::shared_ptr<okvis::MultiFrame> currentKeyframes)
+{
+  okvis::Time timestamp = currentKeyframes->timestamp();
+  std::stringstream timestamp_as_stringstream;
+  timestamp_as_stringstream << timestamp.sec << std::setw(9) << std::setfill('0') << timestamp.nsec;
+  std::string timestamp_as_formatted_string = timestamp_as_stringstream.str();
+
+  for (size_t camIndex = 0; camIndex < numCameras_; ++camIndex) {
+    if (csvTracksFiles_[camIndex]) {
+      if (csvTracksFiles_[camIndex]->good()) {
+        for (size_t keypointIndex = 0; keypointIndex < currentKeyframes->numKeypoints(camIndex); ++keypointIndex) {
+          Eigen::Vector2d keypoint;
+          currentKeyframes->getKeypoint(camIndex, keypointIndex, keypoint);
+          const unsigned char * descriptor = currentKeyframes->keypointDescriptor(camIndex, keypointIndex);
+
+          *csvTracksFiles_[camIndex] 
+          << timestamp_as_formatted_string << ", " 
+          << currentKeyframes->landmarkId(camIndex, keypointIndex) << ", "
+          << std::scientific
+          << std::setprecision(18)
+          << keypoint.x() << ", " 
+          << keypoint.y() << ", " 
+          << 0 << ", ";
+
+          for (size_t encodingIndex = 0; encodingIndex < ENCODING_LENGTH_OF_DESCRIPTOR; ++encodingIndex)
+            *csvTracksFiles_[camIndex] << static_cast<unsigned int>(descriptor[encodingIndex]) << ",";
+
+          *csvTracksFiles_[camIndex] << std::endl;
+        }
+        
+      }
+    }
   }
 }
 
